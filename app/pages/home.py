@@ -10,21 +10,20 @@ from app.components import (
     segment_pie_chart,
     churn_distribution_chart,
     top_reviewers_chart,
+    render_empty_state,
+    render_section_title,
 )
 
 
 def render_home():
     """Render the home dashboard page"""
 
-    st.title("📊 Platform Overview")
-    st.write(
-        "Real-time analytics dashboard for EdTech student engagement and success"
+    render_section_title(
+        "📊 Platform Overview",
+        "Real-time analytics dashboard for EdTech student engagement and success",
     )
 
-    # ============================================================================
-    # Section 1: Key Metrics
-    # ============================================================================
-    st.header("📈 Key Metrics")
+    render_section_title("📈 Key Metrics")
 
     # Get all metrics
     engagement_metrics = AnalyticsService.get_engagement_metrics()
@@ -106,7 +105,7 @@ def render_home():
             fig = engagement_histogram(engagement_dist)
             st.plotly_chart(fig, use_container_width=True)
         else:
-            st.info("No engagement data available")
+            render_empty_state("No engagement data available.")
 
     # Inactivity distribution
     with col2:
@@ -115,7 +114,7 @@ def render_home():
             fig = inactivity_histogram(inactivity_dist)
             st.plotly_chart(fig, use_container_width=True)
         else:
-            st.info("No inactivity data available")
+            render_empty_state("No inactivity data available.")
 
     # ============================================================================
     # Section 4: Visualizations - Row 2
@@ -129,7 +128,7 @@ def render_home():
             fig = segment_pie_chart(segment_counts)
             st.plotly_chart(fig, use_container_width=True)
         else:
-            st.info("No segment data available")
+            render_empty_state("No segment data available.")
 
     # Churn risk distribution
     with col2:
@@ -138,7 +137,7 @@ def render_home():
             fig = churn_distribution_chart(churn_dist)
             st.plotly_chart(fig, use_container_width=True)
         else:
-            st.info("No churn data available")
+            render_empty_state("No churn data available.")
 
     # ============================================================================
     # Section 5: Top Reviewers

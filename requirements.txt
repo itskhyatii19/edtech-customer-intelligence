@@ -1,34 +1,6 @@
-# Core Data Science Stack
-pandas>=2.0.0
-numpy>=2.0.0
-scikit-learn>=1.0.0
-scipy>=1.10.0
-
-# Visualization
-matplotlib>=3.5.0
-seaborn>=0.12.0
-plotly>=5.17.0
-
-# Web Framework & Dashboard
-streamlit>=1.30.0
-streamlit-extras>=0.3.0
-
-# EDA & Profiling
-fg-data-profiling>=4.0.0  # Updated from ydata-profiling (deprecated)
-
-# Deep Learning & NLP
-torch>=2.0.0
-transformers>=5.0.0
-
-# API & CLI
-typer>=0.9.0
-openai>=1.0.0
-Flask>=3.0.0
-
-# Jupyter
-jupyter>=1.0.0
-ipython>=8.0.0
-
-# Optional but recommended
-ipykernel>=6.0.0
-python-dotenv>=1.0.0
+streamlit==1.57.0
+pandas==2.3.3
+plotly==6.7.0
+scikit-learn==1.8.0
+nltk==3.9.4
+numpy==2.3.5

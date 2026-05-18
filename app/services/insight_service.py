@@ -14,10 +14,28 @@ class InsightService:
     def generate_insights(sample_n: int = 10) -> Dict[str, Any]:
         df = DataLoader.load_features()
 
+        if df is None or df.empty:
+            return {
+                "summary": pd.DataFrame(
+                    [
+                        {"metric": "total_users", "value": 0},
+                        {"metric": "avg_engagement", "value": 0.0},
+                        {"metric": "high_risk_pct", "value": 0.0},
+                    ]
+                ),
+                "churn_anomalies": pd.DataFrame(),
+                "engagement_drop_candidates": pd.DataFrame(),
+                "at_risk_segments": pd.DataFrame(),
+            }
+
         # Basic aggregates
         total_users = len(df)
         avg_engagement = float(df.get("engagement_score", pd.Series([0])).mean())
-        high_risk_pct = float((df.get("churn_risk", pd.Series()) == "high").mean()) if "churn_risk" in df.columns else 0.0
+        high_risk_pct = (
+            float((df.get("churn_risk", pd.Series(dtype=object)) == "high").mean())
+            if "churn_risk" in df.columns
+            else 0.0
+        )
 
         # Churn anomalies: extreme scores
         churn_anomalies = df[df.get("churn_score", 0) >= 0.9]
@@ -26,15 +44,31 @@ class InsightService:
         # Engagement drop candidates: low engagement and long inactive
         candidates = df[
             (df.get("engagement_score", 1) < 0.3)
-            & (df.get("days_inactive", df.get("inactive_days", df.get("days_since_last_activity", 999))) > 30)
+            & (
+                df.get(
+                    "days_inactive",
+                    df.get("inactive_days", df.get("days_since_last_activity", 999)),
+                )
+                > 30
+            )
         ]
         candidates_sample = candidates.head(sample_n)
 
         # Top at-risk segments (by churn_risk or segment column if present)
         if "segment" in df.columns:
-            at_risk_segments = df.groupby("segment").agg({"churn_score": "mean", "uuid": "count"}).sort_values("churn_score", ascending=False).reset_index()
+            at_risk_segments = (
+                df.groupby("segment")
+                .agg({"churn_score": "mean", "uuid": "count"})
+                .sort_values("churn_score", ascending=False)
+                .reset_index()
+            )
         elif "churn_risk" in df.columns:
-            at_risk_segments = df.groupby("churn_risk").agg({"churn_score": "mean", "uuid": "count"}).sort_values("churn_score", ascending=False).reset_index()
+            at_risk_segments = (
+                df.groupby("churn_risk")
+                .agg({"churn_score": "mean", "uuid": "count"})
+                .sort_values("churn_score", ascending=False)
+                .reset_index()
+            )
         else:
             at_risk_segments = pd.DataFrame()
 

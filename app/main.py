@@ -12,7 +12,15 @@ import sys
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from app.config import APP_TITLE, APP_DESCRIPTION, APP_ICON
+from app.config import (
+    APP_TITLE,
+    APP_DESCRIPTION,
+    APP_ICON,
+    APP_VERSION,
+    APP_AUTHOR,
+    APP_COPYRIGHT,
+    APP_PAGES,
+)
 from app.pages.home import render_home
 from app.pages.review_intelligence import render_review_intelligence
 from app.pages.learner_analytics import render_learner_analytics
@@ -34,9 +42,9 @@ st.set_page_config(
         {APP_DESCRIPTION}
         
         ---
-        **Version:** 0.1.0  
-        **Author:** EdTech Analytics Team  
-        **Last Updated:** May 2026
+        **Version:** {APP_VERSION}  
+        **Author:** {APP_AUTHOR}  
+        **Copyright:** {APP_COPYRIGHT}
         """
     },
 )
@@ -80,7 +88,7 @@ with st.sidebar:
     # Navigation menu
     selected_page = st.radio(
         "Go to:",
-        options=["Home", "AI Insights", "Learner Analytics", "Review Intelligence", "Settings"],
+        options=APP_PAGES,
         label_visibility="collapsed",
     )
 
@@ -244,7 +252,5 @@ elif selected_page == "Settings":
 # ============================================================================
 st.divider()
 st.caption(
-    "EdTech Customer Intelligence Platform | "
-    "[GitHub](https://github.com) | "
-    "[Report Issue](https://github.com/issues)"
+    f"{APP_TITLE} · {APP_VERSION} · {APP_COPYRIGHT}"
 )

@@ -7,20 +7,25 @@ from app.components import (
     rating_histogram,
     sentiment_bar_chart,
     keyword_bar_chart,
+    render_empty_state,
+    render_section_title,
 )
 from app.services.export_service import get_filtered_reviews_csv
 
 
 def render_review_intelligence():
     """Render the review intelligence dashboard page."""
-    st.title("💬 Review Intelligence")
-    st.write(
-        "Analyze student feedback, sentiment, and common themes from course reviews."
+    render_section_title(
+        "💬 Review Intelligence",
+        "Analyze student feedback, sentiment, and common themes from course reviews.",
     )
 
     reviews = ReviewService.load_reviews()
     if reviews is None:
-        st.error("Unable to load review data. Check the data source and retry.")
+        render_empty_state(
+            "Unable to load review data.",
+            "Check that the review CSV file exists and refresh the app.",
+        )
         return
 
     # Compute key review metrics
@@ -68,7 +73,7 @@ def render_review_intelligence():
             fig = rating_histogram(rating_dist)
             st.plotly_chart(fig, use_container_width=True)
         else:
-            st.info("No rating distribution data available.")
+            render_empty_state("No rating distribution data available.")
 
     with col2:
         sentiment_dist = ReviewService.get_sentiment_distribution()
@@ -76,7 +81,7 @@ def render_review_intelligence():
             fig = sentiment_bar_chart(sentiment_dist)
             st.plotly_chart(fig, use_container_width=True)
         else:
-            st.info("No sentiment distribution data available.")
+            render_empty_state("No sentiment distribution data available.")
 
     st.divider()
 
@@ -90,7 +95,7 @@ def render_review_intelligence():
         fig = keyword_bar_chart(top_keywords)
         st.plotly_chart(fig, use_container_width=True)
     else:
-        st.info("No keyword data available to display.")
+        render_empty_state("No keyword data available to display.")
 
     # Show themes by sentiment and topics
     st.divider()
@@ -118,7 +123,7 @@ def render_review_intelligence():
         for t in topics:
             st.write(f"**Topic {t['topic_id']}**: " + ", ".join(t["terms"]))
     else:
-        st.info("No topics extracted")
+        render_empty_state("No topics extracted.")
 
     st.divider()
 

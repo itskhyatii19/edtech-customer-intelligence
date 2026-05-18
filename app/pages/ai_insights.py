@@ -8,12 +8,14 @@ import pandas as pd
 
 from app.services.insight_service import InsightService
 from app.services import df_to_csv_bytes
+from app.components import render_empty_state, render_section_title
 
 
 def render_ai_insights():
-    st.title("🤖 AI Insights")
-    st.write("Deterministic business signals and anomaly detection."
-             " Placeholders for future LLM explanations.")
+    render_section_title(
+        "🤖 AI Insights",
+        "Deterministic business signals and anomaly detection. Placeholders for future LLM explanations.",
+    )
 
     with st.spinner("Computing insights..."):
         out = InsightService.generate_insights(sample_n=25)
@@ -34,7 +36,7 @@ def render_ai_insights():
 
     st.subheader("Churn Anomalies (sample)")
     if churn_anom is None or churn_anom.empty:
-        st.info("No churn anomalies detected with the current thresholds.")
+        render_empty_state("No churn anomalies detected with the current thresholds.")
     else:
         st.dataframe(churn_anom.head(50), use_container_width=True)
         b = df_to_csv_bytes(churn_anom)
@@ -42,7 +44,7 @@ def render_ai_insights():
 
     st.subheader("Engagement Drop Candidates")
     if drops is None or drops.empty:
-        st.info("No engagement-drop candidates detected.")
+        render_empty_state("No engagement-drop candidates detected.")
     else:
         st.dataframe(drops.head(50), use_container_width=True)
         b2 = df_to_csv_bytes(drops)

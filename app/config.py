@@ -31,6 +31,10 @@ LOG_ROWS_LIMIT = 500000
 APP_TITLE = "EdTech Customer Intelligence Platform"
 APP_DESCRIPTION = "AI-powered analytics for student engagement and success"
 APP_ICON = "📊"
+APP_VERSION = "0.1.0"
+APP_AUTHOR = "EdTech Analytics Team"
+APP_COPYRIGHT = "© 2026 EdTech Customer Intelligence"
+APP_PAGES = ["Home", "AI Insights", "Learner Analytics", "Review Intelligence", "Settings"]
 
 # Color scheme
 COLORS = {

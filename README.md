@@ -1,223 +1,116 @@
 # 🎓 EdTech Customer Intelligence Platform
 
-An ML-powered analytics dashboard built with **Streamlit**, **Plotly**, and **Python** to analyze student engagement, review sentiment, churn risk, and learning behavior in EdTech platforms.
+A production-style AI analytics dashboard built with **Streamlit**, **Plotly**, and **Python**. This project combines learner engagement intelligence, review analytics, churn risk insights, and reusable dashboard engineering patterns.
 
-Designed as a production-style applied machine learning and analytics project focused on:
-- learner engagement intelligence
-- review analytics
-- churn analysis
-- operational dashboard engineering
-- modular ML system design
-
----
-
-#  Features
-
-## 📊 Platform Analytics
-- Total learner tracking
-- Engagement score analysis
-- Activity distribution
-- User segmentation
-- Churn risk analysis
-- Retention insights
+## What this project showcases
+- Modern dashboard UI with responsive layout and reusable components
+- Data engineering for EdTech engagement and churn analytics
+- Modular service architecture with cache management
+- Automated insights and export capabilities
+- Clean portfolio-ready documentation and packaging
 
 ---
 
-## 💬 Review Intelligence
-- Review sentiment analysis
-- Rating distribution
-- Positive/negative review tracking
-- Keyword & theme extraction
-- Search and filter reviews
-- NLP-powered review analytics
+## 🚀 Features
 
----
+### Platform Analytics
+- Learner engagement KPIs
+- Activity and churn distribution
+- Segment-level comparisons
+- Retention and inactivity trends
 
-##  Learner Analytics
-- Engagement trends
-- Activity behavior analysis
-- Segment comparison
-- Active vs inactive learner analysis
-- Retention-oriented insights
+### Learner Analytics
+- Filter-driven cohort analysis
+- Engagement and inactivity buckets
+- Retention curve visualization
+- Churn risk monitoring
+- Downloadable cohort exports
 
----
+### Review Intelligence
+- Rating and sentiment distribution
+- Review theme extraction
+- Keyword-driven review analysis
+- Search and filter reviews with export support
 
-##  AI Insights Engine
-- Automated analytics insights
-- Engagement anomaly detection
-- Risk pattern identification
-- Recommendation generation
-- Business intelligence summaries
+### AI Insights
+- Deterministic business signals
+- Churn anomaly detection
+- Engagement drop candidate identification
+- LLM-ready insight scaffold
 
----
-
-## ⚙️ Settings & Data Management
-- Dynamic cache management
-- Configurable cache TTL
+### Settings & System Management
 - Runtime cache invalidation
-- Feature engineering controls
-- Dataset information panel
-- Application diagnostics
+- Cache TTL controls
+- Data source metadata panel
+- Lightweight app health checks
 
 ---
 
-## 📁 Export Functionality
-- CSV exports
-- Filtered review exports
-- Analytics summary downloads
-
----
-
-#  Machine Learning & Analytics
-
-## Implemented ML / Analytics Logic
-- Engagement scoring
-- User segmentation
-- Churn risk scoring
-- Sentiment classification
-- Keyword extraction
-- TF-IDF based NLP processing
-- Activity trend analysis
-
----
-
-## Churn Prediction Logic
-Churn risk is calculated using:
-- engagement score
-- inactivity duration
-- activity frequency
-- weighted scoring thresholds
-
-Risk bands:
-- Low Risk
-- Medium Risk
-- High Risk
-
----
-
-## NLP Pipeline
-Review intelligence uses:
-- TF-IDF vectorization
-- stopword removal
-- n-gram extraction
-- phrase extraction
-- sentiment grouping
-
----
-
-# 🏗️ Architecture
-
-## Project Structure
+## 🏗️ Architecture
 
 ```bash
 edtech-customer-intelligence/
-│
 ├── app/
-│   ├── main.py
-│   ├── pages/
-│   ├── services/
-│   ├── components/
-│   └── config.py
-│
-├── src/
-│   ├── features/
-│   ├── llm/
-│   ├── pipelines/
-│   └── utils/
-│
-├── data/
-│   ├── junyi/
-│   └── reviews/
-│
-├── models/
-├── tests/
-├── notebooks/
-└── requirements.txt
+│   ├── main.py              # Streamlit app entry and routing
+│   ├── pages/               # Dashboard page layouts
+│   ├── services/            # Data and analytics service layer
+│   ├── components/          # Reusable UI components
+│   └── config.py            # Central constants and paths
+├── data/                    # Raw CSV data sources
+├── models/                  # Model artifacts and outputs
+├── notebooks/               # EDA and feature engineering workbooks
+├── requirements.txt         # Python dependencies
+└── README.md                # Project documentation
 ```
 
 ---
 
-# 🧩 Tech Stack
+## 🛠️ Tech Stack
 
-## Frontend / Dashboard
+- Python 3.11+
 - Streamlit
 - Plotly
-
-## Backend / Processing
-- Python
-- Pandas
+- pandas
 - NumPy
-
-## Machine Learning / NLP
-- Scikit-learn
+- scikit-learn
 - NLTK
 
-## Engineering
-- Modular service architecture
-- Dynamic caching
-- Reusable components
-- Config-driven settings
-
 ---
 
-# ⚡ Performance Optimizations
-
-- Streamlit caching
-- Runtime cache TTL management
-- Cached analytics computations
-- Reusable service layer
-- Optimized dataframe operations
-
----
-
-# 📈 Dashboard Pages
-
-| Page | Description |
-|------|-------------|
-| Home | KPI overview and platform analytics |
-| Learner Analytics | Engagement and retention insights |
-| Review Intelligence | NLP and sentiment analytics |
-| AI Insights | Automated business insights |
-| Settings | Cache and system management |
-
----
-
-# 🖥️ Installation
-
-## 1. Clone Repository
+## 📦 Installation
 
 ```bash
 git clone https://github.com/your-username/edtech-customer-intelligence.git
 cd edtech-customer-intelligence
-```
-
----
-
-## 2. Create Virtual Environment
-
-### Windows
-
-```bash
 python -m venv venv
 venv\Scripts\activate
-```
-
-### Linux / Mac
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
----
-
-## 3. Install Dependencies
-
-```bash
 pip install -r requirements.txt
+streamlit run app/main.py
 ```
 
 ---
+
+## 📁 Data Structure
+
+- `data/junyi/raw/Info_UserData.csv` — learner demographics
+- `data/junyi/raw/Log_Problem.csv` — activity logs
+- `data/reviews/raw/reviews.csv` — student review text
+
+---
+
+## 📸 Screenshots
+
+> Add screenshots here for the Home, Learner Analytics, Review Intelligence, and AI Insights pages.
+
+---
+
+## ✅ Portfolio Highlights
+
+- Professional dashboard layout with reusable UI components
+- Centralized cache management and runtime TTL support
+- Lightweight verification utilities for imports and data health
+- Clean documentation and dependency packaging
+- Minimal, polished `.gitignore` for clean repos
 
 # ▶️ Run Application
 

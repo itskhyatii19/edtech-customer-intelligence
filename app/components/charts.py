@@ -259,6 +259,94 @@ def rating_histogram(
     return fig
 
 
+def retention_curve_chart(
+    retention_data: Dict[str, float],
+    title: str = "Retention Curve",
+) -> go.Figure:
+    """Create a retention curve chart from binned retention data."""
+    labels = list(retention_data.keys())
+    values = list(retention_data.values())
+
+    fig = go.Figure(
+        data=[
+            go.Scatter(
+                x=labels,
+                y=values,
+                mode="lines+markers",
+                line=dict(color=COLORS["primary"], width=3),
+                marker=dict(size=8),
+            )
+        ]
+    )
+
+    fig.update_layout(
+        title=title,
+        xaxis_title="Days Since Last Activity",
+        yaxis_title="Share of Users (%)",
+        height=400,
+        hovermode="x unified",
+        template="plotly_white",
+    )
+    return fig
+
+
+def activity_frequency_histogram(
+    activity_data: Dict[str, int],
+    title: str = "Activity Frequency",
+) -> go.Figure:
+    """Create a histogram chart for activity frequency."""
+    labels = list(activity_data.keys())
+    values = list(activity_data.values())
+
+    fig = go.Figure(
+        data=[
+            go.Bar(
+                x=labels,
+                y=values,
+                marker=dict(color=COLORS["secondary"]),
+                text=values,
+                textposition="auto",
+            )
+        ]
+    )
+
+    fig.update_layout(
+        title=title,
+        xaxis_title="Activity Range",
+        yaxis_title="Number of Users",
+        showlegend=False,
+        height=400,
+        hovermode="x unified",
+        template="plotly_white",
+    )
+    return fig
+
+
+def engagement_inactivity_scatter(
+    df: pd.DataFrame,
+    title: str = "Engagement vs Inactivity",
+) -> go.Figure:
+    """Create a scatter plot comparing engagement score and inactivity."""
+    fig = px.scatter(
+        df,
+        x="inactive_days",
+        y="engagement_score",
+        color="churn_risk",
+        color_discrete_map=CHURN_RISK_COLORS,
+        hover_data={"uuid": True, "user_segment": True, "activity_count": True},
+        labels={
+            "inactive_days": "Days Inactive",
+            "engagement_score": "Engagement Score",
+            "churn_risk": "Churn Risk",
+        },
+        title=title,
+        height=420,
+    )
+    fig.update_traces(marker=dict(size=8, opacity=0.8))
+    fig.update_layout(template="plotly_white", hovermode="closest")
+    return fig
+
+
 def sentiment_bar_chart(
     sentiment_data: Dict[str, int],
     title: str = "Sentiment Distribution",
