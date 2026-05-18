@@ -18,6 +18,7 @@ from src.features.build_features import (
     segment_users,
 )
 from app.services.churn_service import ChurnService
+from app.services.cache_utils import make_cache_buster
 from app.config import (
     USERS_CSV,
     LOGS_CSV,
@@ -30,9 +31,9 @@ class DataLoader:
     """Handles data loading with Streamlit caching"""
 
     @staticmethod
-    @st.cache_data(ttl=3600)  # Cache for 1 hour
-    def load_users_and_logs():
-        """Load user and activity log data from CSV files"""
+    @st.cache_data
+    def _cached_users_and_logs(cache_buster: str):
+        """Internal cache wrapper for users and logs."""
         try:
             users = pd.read_csv(USERS_CSV)
             logs = pd.read_csv(LOGS_CSV, nrows=LOG_ROWS_LIMIT)
@@ -42,9 +43,15 @@ class DataLoader:
             return None, None
 
     @staticmethod
-    @st.cache_data(ttl=3600)
-    def load_reviews():
-        """Load reviews data from CSV"""
+    def load_users_and_logs():
+        """Load user and activity log data from CSV files with dynamic TTL."""
+        token = make_cache_buster("users_and_logs")
+        return DataLoader._cached_users_and_logs(token)
+
+    @staticmethod
+    @st.cache_data
+    def _cached_reviews(cache_buster: str):
+        """Internal cache wrapper for reviews."""
         try:
             reviews = pd.read_csv(REVIEWS_CSV)
             return reviews
@@ -53,16 +60,17 @@ class DataLoader:
             return None
 
     @staticmethod
-    @st.cache_data(ttl=3600)
-    def load_features():
-        """
-        Load and compute all features (engagement, inactivity, churn, segments)
-        
-        Returns:
-            DataFrame with computed features for all users
-        """
+    def load_reviews():
+        """Load reviews data from CSV with dynamic TTL."""
+        token = make_cache_buster("reviews")
+        return DataLoader._cached_reviews(token)
+
+    @staticmethod
+    @st.cache_data
+    def _cached_features(cache_buster: str):
+        """Internal cache wrapper for expensive feature computations."""
         users, logs = DataLoader.load_users_and_logs()
-        
+
         if users is None or logs is None:
             return None
 
@@ -98,6 +106,12 @@ class DataLoader:
         return df
 
     @staticmethod
+    def load_features():
+        """Load and compute features with dynamic TTL."""
+        token = make_cache_buster("features")
+        return DataLoader._cached_features(token)
+
+    @staticmethod
     def get_user_count():
         """Get total number of users"""
         df = DataLoader.load_features()
@@ -108,6 +122,21 @@ class DataLoader:
         """Get total number of reviews"""
         reviews = DataLoader.load_reviews()
         return len(reviews) if reviews is not None else 0
+
+    @staticmethod
+    def verify_light_loads():
+        """Verify lightweight data loading without running full feature engineering."""
+        users, logs = DataLoader.load_users_and_logs()
+        reviews = DataLoader.load_reviews()
+
+        return {
+            "users_loaded": users is not None,
+            "logs_loaded": logs is not None,
+            "reviews_loaded": reviews is not None,
+            "users_rows": len(users) if users is not None else 0,
+            "logs_rows": len(logs) if logs is not None else 0,
+            "review_rows": len(reviews) if reviews is not None else 0,
+        }
 
     @staticmethod
     def get_segment_counts():
