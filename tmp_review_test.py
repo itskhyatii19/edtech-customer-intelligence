@@ -1,4 +1,4 @@
-from app.pages.review_intelligence import render_review_intelligence
+from app.page_views.review_intelligence import render_review_intelligence
 from app.services.review_service import ReviewService
 
 reviews = ReviewService.load_reviews()

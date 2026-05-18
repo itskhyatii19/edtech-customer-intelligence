@@ -14,7 +14,13 @@ from .charts import (
     sentiment_bar_chart,
     keyword_bar_chart,
 )
-from .ui import render_empty_state, render_insight_cards, render_section_title
+from .ui import (
+    render_dashboard_card,
+    render_empty_state,
+    render_insight_cards,
+    render_navigation_card,
+    render_section_title,
+)
 
 __all__ = [
     "metric_card",
@@ -30,7 +36,9 @@ __all__ = [
     "engagement_inactivity_scatter",
     "sentiment_bar_chart",
     "keyword_bar_chart",
+    "render_dashboard_card",
     "render_empty_state",
     "render_insight_cards",
+    "render_navigation_card",
     "render_section_title",
 ]

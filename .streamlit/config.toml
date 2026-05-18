@@ -9,6 +9,7 @@ font = "sans serif"
 
 [client]
 showErrorDetails = true
+toolbarMode = "minimal"
 
 [logger]
 level = "info"
@@ -18,6 +19,3 @@ headless = true
 port = 8501
 runOnSave = true
 maxUploadSize = 200
-
-[client.toolbarMode]
-value = "minimal"
