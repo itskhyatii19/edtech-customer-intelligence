@@ -14,15 +14,14 @@ from app.components import (
     render_dashboard_card,
     render_empty_state,
     render_insight_cards,
-    render_navigation_card,
-    render_section_title,
+    render_page_header,
 )
 
 
 def render() -> None:
     """Render the home dashboard page."""
-    render_section_title(
-        "Platform Overview",
+    render_page_header(
+        "Overview",
         "A compact executive dashboard for learner engagement, churn risk, and review intelligence.",
     )
 
@@ -69,39 +68,39 @@ def render() -> None:
             badge="Reviews",
         )
 
-    st.markdown("---")
-    st.subheader("Health snapshot")
+    st.divider()
+    st.markdown("### Health snapshot")
 
-    col1, col2 = st.columns([1.5, 1], gap="large")
+    col1, col2 = st.columns([1.5, 1], gap="medium")
     with col1:
         engagement_dist = AnalyticsService.get_engagement_distribution()
         if engagement_dist:
-            st.plotly_chart(engagement_histogram(engagement_dist, title="Engagement distribution"), use_container_width=True)
+            st.plotly_chart(engagement_histogram(engagement_dist, title="Engagement distribution"), width='stretch')
         else:
             render_empty_state("No engagement data available.")
 
         segment_counts = DataLoader.get_segment_counts()
         if segment_counts:
-            st.plotly_chart(segment_pie_chart(segment_counts, title="Engagement segments"), use_container_width=True)
+            st.plotly_chart(segment_pie_chart(segment_counts, title="Engagement segments"), width='stretch')
         else:
             render_empty_state("Segment breakdown is unavailable.")
 
     with col2:
         inactivity_dist = AnalyticsService.get_inactivity_distribution()
         if inactivity_dist:
-            st.plotly_chart(inactivity_histogram(inactivity_dist, title="Inactivity distribution"), use_container_width=True)
+            st.plotly_chart(inactivity_histogram(inactivity_dist, title="Inactivity distribution"), width='stretch')
         else:
             render_empty_state("No inactivity data available.")
 
         churn_dist = DataLoader.get_churn_distribution()
         if churn_dist:
-            st.plotly_chart(churn_distribution_chart(churn_dist, title="Churn distribution"), use_container_width=True)
+            st.plotly_chart(churn_distribution_chart(churn_dist, title="Churn distribution"), width='stretch')
         else:
             render_empty_state("Churn risk distribution is unavailable.")
 
-    st.markdown("---")
-    st.subheader("Review intelligence preview")
-    col1, col2 = st.columns([1, 1], gap="large")
+    st.divider()
+    st.markdown("### Review intelligence preview")
+    col1, col2 = st.columns([1, 1], gap="medium")
     with col1:
         if avg_rating is not None:
             render_dashboard_card(
@@ -115,19 +114,19 @@ def render() -> None:
 
         rating_dist = ReviewService.get_rating_distribution()
         if rating_dist:
-            st.plotly_chart(rating_histogram(rating_dist, title="Rating distribution"), use_container_width=True)
+            st.plotly_chart(rating_histogram(rating_dist, title="Rating distribution"), width='stretch')
         else:
             render_empty_state("Rating distribution is unavailable.")
 
     with col2:
         sentiment_dist = ReviewService.get_sentiment_distribution()
         if sentiment_dist:
-            st.plotly_chart(sentiment_bar_chart(sentiment_dist, title="Sentiment mix"), use_container_width=True)
+            st.plotly_chart(sentiment_bar_chart(sentiment_dist, title="Sentiment mix"), width='stretch')
         else:
             render_empty_state("Sentiment distribution is unavailable.")
 
-    st.markdown("---")
-    st.subheader("AI-driven recommendations")
+    st.divider()
+    st.markdown("### AI-driven recommendations")
     insights = []
     if quick_insights and quick_insights.get("summary") is not None:
         summary = quick_insights["summary"]
@@ -161,37 +160,4 @@ def render() -> None:
             }
         )
     render_insight_cards(insights, columns=3)
-
-    st.markdown("---")
-    st.subheader("Quick navigation")
-    quick_cols = st.columns(4, gap="large")
-    with quick_cols[0]:
-        render_navigation_card(
-            title="Learner Analytics",
-            description="Explore cohort segmentation, churn, and retention trends.",
-            page_name="Learner Analytics",
-            key="nav_learner",
-        )
-    with quick_cols[1]:
-        render_navigation_card(
-            title="AI Insights",
-            description="Review anomaly, churn, and engagement signals.",
-            page_name="AI Insights",
-            key="nav_ai",
-        )
-    with quick_cols[2]:
-        render_navigation_card(
-            title="Review Intelligence",
-            description="Analyze sentiment, themes, and top feedback.",
-            page_name="Review Intelligence",
-            key="nav_review",
-        )
-    with quick_cols[3]:
-        render_navigation_card(
-            title="Settings",
-            description="Refresh cache and tune analysis parameters.",
-            page_name="Settings",
-            key="nav_settings",
-        )
-
     st.caption("Balanced layout, compact cards, and actionable insights for a modern product-grade dashboard.")

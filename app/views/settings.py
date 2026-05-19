@@ -1,17 +1,20 @@
 """Settings page for cache and churn parameter management."""
 
 import streamlit as st
+from app.components import render_page_header
 from app.services import ChurnService
 
 
 def render() -> None:
-    st.title("⚙️ Settings & Data Management")
-    st.write("Control caching, churn scoring, and data refresh behavior.")
+    render_page_header(
+        "⚙️ Settings & Data Management",
+        "Control caching, churn scoring, and data refresh behavior.",
+    )
 
     with st.expander("Cache Management", expanded=True):
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("Clear all cache", use_container_width=True):
+            if st.button("Clear all cache", width='stretch'):
                 from app.services import clear_all_cache
 
                 clear_all_cache()

@@ -393,14 +393,30 @@ def keyword_bar_chart(
         fig.add_annotation(text="No keyword data available")
         return fig
 
+    keyword_column = "Keyword" if "Keyword" in keyword_df.columns else keyword_df.columns[0]
+    count_column = None
+    for candidate in ["Count", "Score", keyword_df.columns[1] if len(keyword_df.columns) > 1 else None]:
+        if candidate is not None and candidate in keyword_df.columns:
+            count_column = candidate
+            break
+
+    if count_column is None:
+        fig = go.Figure()
+        fig.add_annotation(text="Keyword frequency column not found")
+        return fig
+
+    x_values = keyword_df[count_column].tolist()[::-1]
+    y_values = keyword_df[keyword_column].astype(str).tolist()[::-1]
+    text_values = [f"{v:.2f}" if isinstance(v, float) else str(v) for v in x_values]
+
     fig = go.Figure(
         data=[
             go.Bar(
-                x=keyword_df["Count"].tolist()[::-1],
-                y=keyword_df["Keyword"].tolist()[::-1],
+                x=x_values,
+                y=y_values,
                 orientation="h",
                 marker=dict(color=COLORS["secondary"]),
-                text=keyword_df["Count"].tolist()[::-1],
+                text=text_values,
                 textposition="auto",
             )
         ]

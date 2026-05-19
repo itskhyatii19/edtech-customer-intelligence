@@ -34,7 +34,7 @@ APP_ICON = "📊"
 APP_VERSION = "0.1.0"
 APP_AUTHOR = "EdTech Analytics Team"
 APP_COPYRIGHT = "© 2026 EdTech Customer Intelligence"
-APP_PAGES = ["Home", "AI Insights", "Learner Analytics", "Review Intelligence", "Settings"]
+APP_PAGES = ["Overview", "Learner Analytics", "AI Insights", "Review Intelligence", "Settings"]
 
 # Color scheme
 COLORS = {

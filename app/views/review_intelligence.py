@@ -3,19 +3,19 @@
 import streamlit as st
 from app.services.review_service import ReviewService
 from app.components import (
+    keyword_bar_chart,
     metric_row,
     rating_histogram,
-    sentiment_bar_chart,
-    keyword_bar_chart,
     render_empty_state,
-    render_section_title,
+    render_page_header,
+    sentiment_bar_chart,
 )
 from app.services.export_service import get_filtered_reviews_csv
 
 
 def render() -> None:
     """Render the review intelligence dashboard page."""
-    render_section_title(
+    render_page_header(
         "💬 Review Intelligence",
         "Compare sentiment, ratings, and review themes to prioritize learner feedback improvements.",
     )
@@ -51,48 +51,51 @@ def render() -> None:
         ]
     )
 
-    render_section_title("Rating & Sentiment")
-    col1, col2 = st.columns(2)
+    st.divider()
+    st.markdown("### Rating & Sentiment")
+    col1, col2 = st.columns(2, gap="medium")
     with col1:
         rating_dist = ReviewService.get_rating_distribution()
         if rating_dist is not None:
-            st.plotly_chart(rating_histogram(rating_dist), use_container_width=True)
+            st.plotly_chart(rating_histogram(rating_dist), width='stretch')
         else:
             render_empty_state("No rating distribution data available.")
     with col2:
         sentiment_dist = ReviewService.get_sentiment_distribution()
         if sentiment_dist is not None:
-            st.plotly_chart(sentiment_bar_chart(sentiment_dist), use_container_width=True)
+            st.plotly_chart(sentiment_bar_chart(sentiment_dist), width='stretch')
         else:
             render_empty_state("No sentiment distribution data available.")
 
-    render_section_title("Review Themes")
+    st.divider()
+    st.markdown("### Review Themes")
     st.write("Frequently mentioned themes and keywords identified from review text.")
     top_keywords = ReviewService.get_top_keywords(n=12)
     if top_keywords is not None and not top_keywords.empty:
-        st.plotly_chart(keyword_bar_chart(top_keywords), use_container_width=True)
+        st.plotly_chart(keyword_bar_chart(top_keywords), width='stretch')
     else:
         render_empty_state("No keyword data available.")
 
     themes = ReviewService.get_theme_by_sentiment(top_n=8)
     if themes:
-        col1, col2 = st.columns(2)
+        col1, col2 = st.columns(2, gap="large")
         with col1:
-            st.subheader("Positive themes")
+            st.markdown("#### Positive themes")
             if themes.get("positive") is not None:
-                st.dataframe(themes.get("positive"), use_container_width=True)
+                st.dataframe(themes.get("positive"), width='stretch')
             else:
                 st.info("No positive themes detected.")
         with col2:
-            st.subheader("Negative themes")
+            st.markdown("#### Negative themes")
             if themes.get("negative") is not None:
-                st.dataframe(themes.get("negative"), use_container_width=True)
+                st.dataframe(themes.get("negative"), width='stretch')
             else:
                 st.info("No negative themes detected.")
     else:
         render_empty_state("No sentiment themes extracted.")
 
-    render_section_title("Topic Extraction")
+    st.divider()
+    st.markdown("### Topic Extraction")
     topics = ReviewService.extract_topics(n_topics=5, n_top_words=6)
     if topics:
         for topic in topics:
@@ -100,7 +103,8 @@ def render() -> None:
     else:
         render_empty_state("No topics extracted.")
 
-    render_section_title("Search & Filter Reviews")
+    st.divider()
+    st.markdown("### Search & Filter Reviews")
     with st.expander("Open review filters", expanded=True):
         with st.form(key="review-search-form"):
             search_text = st.text_input(
@@ -134,7 +138,7 @@ def render() -> None:
             st.dataframe(
                 filtered_reviews[["Review", "Label", "Sentiment", "Review Length"]].head(100),
                 hide_index=True,
-                use_container_width=True,
+                width='stretch',
             )
             csv_bytes = get_filtered_reviews_csv(filtered_reviews)
             if csv_bytes is not None:

@@ -4,7 +4,7 @@ import glob
 files = [
     'app/main.py',
 ]
-files += glob.glob('app/pages/*.py')
+files += glob.glob('app/views/*.py')
 files += glob.glob('app/services/*.py')
 
 errs = []

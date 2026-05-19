@@ -21,7 +21,7 @@ from app.config import (
     APP_COPYRIGHT,
     APP_PAGES,
 )
-from app.pages import (
+from app.views import (
     render_home,
     render_ai_insights,
     render_learner_analytics,
@@ -83,7 +83,7 @@ st.markdown(
 # Sidebar Navigation
 # ============================================================================
 if "selected_page" not in st.session_state:
-    st.session_state["selected_page"] = "Home"
+    st.session_state["selected_page"] = "Overview"
 
 if st.session_state["selected_page"] not in APP_PAGES:
     st.session_state["selected_page"] = APP_PAGES[0]
@@ -102,24 +102,13 @@ with st.sidebar:
     st.session_state["selected_page"] = selected_page
 
     st.divider()
-    st.markdown(
-        """
-        **Quick actions**  
-        - Home overview  
-        - Learner analytics  
-        - AI insights  
-        - Review intelligence  
-        - Settings
-        """
-    )
-    st.divider()
-    st.caption("Data updates every hour. Use Settings to refresh cache.")
+    st.caption("Navigate between dashboard pages using the selector above.")
 
 # ============================================================================
 # Page Routing
 # ============================================================================
 PAGE_RENDERERS = {
-    "Home": render_home,
+    "Overview": render_home,
     "Learner Analytics": render_learner_analytics,
     "AI Insights": render_ai_insights,
     "Review Intelligence": render_review_intelligence,

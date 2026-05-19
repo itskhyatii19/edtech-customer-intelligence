@@ -10,12 +10,12 @@ from app.components import (
     render_dashboard_card,
     render_empty_state,
     render_insight_cards,
-    render_section_title,
+    render_page_header,
 )
 
 
 def render() -> None:
-    render_section_title(
+    render_page_header(
         "AI Insights",
         "Deterministic signals, churn warnings, and action-oriented recommendations.",
     )
@@ -23,10 +23,21 @@ def render() -> None:
     with st.spinner("Computing insights..."):
         out = InsightService.generate_insights(sample_n=25)
 
-    summary: pd.DataFrame = out.get("summary") or pd.DataFrame()
-    churn_anom: pd.DataFrame = out.get("churn_anomalies") or pd.DataFrame()
-    drops: pd.DataFrame = out.get("engagement_drop_candidates") or pd.DataFrame()
-    at_risk: pd.DataFrame = out.get("at_risk_segments") or pd.DataFrame()
+    summary = out.get("summary")
+    if not isinstance(summary, pd.DataFrame):
+        summary = pd.DataFrame()
+
+    churn_anom = out.get("churn_anomalies")
+    if not isinstance(churn_anom, pd.DataFrame):
+        churn_anom = pd.DataFrame()
+
+    drops = out.get("engagement_drop_candidates")
+    if not isinstance(drops, pd.DataFrame):
+        drops = pd.DataFrame()
+
+    at_risk = out.get("at_risk_segments")
+    if not isinstance(at_risk, pd.DataFrame):
+        at_risk = pd.DataFrame()
 
     high_risk_pct = 0.0
     total_users = 0
@@ -62,8 +73,8 @@ def render() -> None:
             badge="Retention",
         )
 
-    st.markdown("---")
-    st.subheader("Signal summary")
+    st.divider()
+    st.markdown("### Signal summary")
     risk_insights = []
     if total_users > 0:
         risk_insights = [
@@ -89,18 +100,18 @@ def render() -> None:
         ]
     render_insight_cards(risk_insights, columns=3)
 
-    st.markdown("---")
-    st.subheader("Top at-risk segments")
+    st.divider()
+    st.markdown("### Top at-risk segments")
     if not at_risk.empty:
-        st.dataframe(at_risk, use_container_width=True)
+        st.dataframe(at_risk, width='stretch')
     else:
         render_empty_state("No at-risk segments detected. Ensure churn segmentation is computed.")
 
-    st.markdown("---")
-    st.subheader("Churn anomalies")
+    st.divider()
+    st.markdown("### Churn anomalies")
     if not churn_anom.empty:
         st.write(f"Showing {len(churn_anom)} churn anomaly candidates.")
-        st.dataframe(churn_anom.head(40), use_container_width=True)
+        st.dataframe(churn_anom.head(40), width='stretch')
         st.download_button(
             "Download churn anomalies (CSV)",
             data=df_to_csv_bytes(churn_anom),
@@ -110,11 +121,11 @@ def render() -> None:
     else:
         render_empty_state("No churn anomalies detected with the current thresholds.")
 
-    st.markdown("---")
-    st.subheader("Engagement drop candidates")
+    st.divider()
+    st.markdown("### Engagement drop candidates")
     if not drops.empty:
         st.write(f"Showing {len(drops)} low-engagement candidates.")
-        st.dataframe(drops.head(40), use_container_width=True)
+        st.dataframe(drops.head(40), width='stretch')
         st.download_button(
             "Download drop candidates (CSV)",
             data=df_to_csv_bytes(drops),
@@ -124,8 +135,8 @@ def render() -> None:
     else:
         render_empty_state("No low-engagement candidates were identified.")
 
-    st.markdown("---")
-    st.subheader("Actionable recommendations")
+    st.divider()
+    st.markdown("### Actionable recommendations")
     st.write(
         "- Focus retention outreach on learners with high churn risk and low engagement.\n"
         "- Use review feedback sentiment to guide course quality improvements.\n"

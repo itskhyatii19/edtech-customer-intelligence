@@ -6,17 +6,17 @@ import pandas as pd
 import streamlit as st
 
 from app.components import (
+    activity_frequency_histogram,
     churn_distribution_chart,
     engagement_histogram,
     engagement_inactivity_scatter,
     inactivity_histogram,
-    retention_curve_chart,
-    segment_pie_chart,
-    activity_frequency_histogram,
     render_dashboard_card,
     render_empty_state,
     render_insight_cards,
-    render_section_title,
+    render_page_header,
+    retention_curve_chart,
+    segment_pie_chart,
 )
 from app.services import DataLoader
 from app.services.export_service import df_to_csv_bytes
@@ -47,11 +47,17 @@ def _build_retention_curve(df: pd.DataFrame) -> dict[str, float]:
 
 
 def _build_activity_frequency(df: pd.DataFrame) -> dict[str, int]:
-    max_activity = int(df["activity_count"].max()) if not df["activity_count"].empty else 1
-    bins = [0, 1, 3, 5, 10, 20, 50, 100, max_activity + 1]
-    labels = ["0", "1", "2-3", "4-5", "6-10", "11-20", "21-50", "51-100", f"100+ ({max_activity})"]
-    distribution = pd.cut(df["activity_count"], bins=bins, labels=labels, right=False)
-    return distribution.value_counts().sort_index().to_dict()
+    if df is None or df["activity_count"].empty:
+        return {}
+
+    max_activity = int(df["activity_count"].max())
+    fixed_edges = [0, 1, 3, 5, 10, 20, 50, 100]
+    bins = [edge for edge in fixed_edges if edge <= max_activity] + [max_activity + 1]
+    bins = sorted(set(bins))
+
+    distribution = pd.cut(df["activity_count"], bins=bins, right=False)
+    counts = distribution.value_counts().sort_index()
+    return {str(interval): int(count) for interval, count in counts.items()}
 
 
 def _build_segment_comparison(df: pd.DataFrame) -> pd.DataFrame:
@@ -101,7 +107,7 @@ def _build_insights(df: pd.DataFrame) -> list[dict[str, str]]:
 
 def render() -> None:
     """Render the Learner Analytics dashboard page."""
-    render_section_title(
+    render_page_header(
         "Learner Analytics",
         "Explore cohort filters, churn risk, and retention trends in one compact view.",
     )
@@ -204,18 +210,18 @@ def render() -> None:
             badge="Churn",
         )
 
-    st.markdown("---")
-    st.subheader("Retention and engagement")
+    st.divider()
+    st.markdown("### Retention and engagement")
     col1, col2 = st.columns([1.4, 1], gap="large")
     with col1:
-        st.plotly_chart(engagement_histogram(_build_engagement_bins(filtered), title="Engagement distribution"), use_container_width=True)
-        st.plotly_chart(retention_curve_chart(_build_retention_curve(filtered), title="Retention curve"), use_container_width=True)
+        st.plotly_chart(engagement_histogram(_build_engagement_bins(filtered), title="Engagement distribution"), width='stretch')
+        st.plotly_chart(retention_curve_chart(_build_retention_curve(filtered), title="Retention curve"), width='stretch')
     with col2:
-        st.plotly_chart(inactivity_histogram(_build_inactivity_buckets(filtered), title="Inactive days distribution"), use_container_width=True)
-        st.plotly_chart(activity_frequency_histogram(_build_activity_frequency(filtered), title="Activity frequency"), use_container_width=True)
+        st.plotly_chart(inactivity_histogram(_build_inactivity_buckets(filtered), title="Inactive days distribution"), width='stretch')
+        st.plotly_chart(activity_frequency_histogram(_build_activity_frequency(filtered), title="Activity frequency"), width='stretch')
 
-    st.markdown("---")
-    st.subheader("Segment and churn overview")
+    st.divider()
+    st.markdown("### Segment and churn overview")
     segment_summary = _build_segment_comparison(filtered)
     segment_counts = filtered["user_segment"].value_counts().to_dict()
     churn_counts = filtered["churn_risk"].value_counts().to_dict()
@@ -223,25 +229,25 @@ def render() -> None:
     col1, col2 = st.columns(2, gap="large")
     with col1:
         if segment_counts:
-            st.plotly_chart(segment_pie_chart(segment_counts, title="Segment mix"), use_container_width=True)
+            st.plotly_chart(segment_pie_chart(segment_counts, title="Segment mix"), width='stretch')
         else:
             render_empty_state("No segment data available.")
     with col2:
         if churn_counts:
-            st.plotly_chart(churn_distribution_chart(churn_counts, title="Churn risk mix"), use_container_width=True)
+            st.plotly_chart(churn_distribution_chart(churn_counts, title="Churn risk mix"), width='stretch')
         else:
             render_empty_state("No churn distribution data available.")
 
-    st.markdown("---")
-    st.subheader("Engagement vs inactivity")
-    st.plotly_chart(engagement_inactivity_scatter(filtered, title="Engagement vs inactivity"), use_container_width=True)
+    st.divider()
+    st.markdown("### Engagement vs inactivity")
+    st.plotly_chart(engagement_inactivity_scatter(filtered, title="Engagement vs inactivity"), width='stretch')
 
-    st.markdown("---")
-    st.subheader("Segment comparison")
-    st.dataframe(segment_summary, use_container_width=True)
+    st.divider()
+    st.markdown("### Segment comparison")
+    st.dataframe(segment_summary, width='stretch')
 
-    st.markdown("---")
-    render_section_title("Insights")
+    st.divider()
+    st.markdown("### Insights")
     render_insight_cards(_build_insights(filtered), columns=2)
 
     st.download_button(

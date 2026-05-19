@@ -15,11 +15,18 @@ from .charts import (
     keyword_bar_chart,
 )
 from .ui import (
+    empty_state,
+    info_banner,
+    metric_card,
+    page_container,
     render_dashboard_card,
     render_empty_state,
     render_insight_cards,
-    render_navigation_card,
+    render_page_header,
+    render_section_header,
     render_section_title,
+    section_header,
+    section_title,
 )
 
 __all__ = [
@@ -39,6 +46,12 @@ __all__ = [
     "render_dashboard_card",
     "render_empty_state",
     "render_insight_cards",
-    "render_navigation_card",
+    "render_page_header",
+    "render_section_header",
     "render_section_title",
+    "section_header",
+    "section_title",
+    "empty_state",
+    "info_banner",
+    "page_container",
 ]
