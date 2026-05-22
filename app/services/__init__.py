@@ -13,6 +13,14 @@ from .cache_utils import (
     cache_buster_for_key,
     verify_cache_helpers,
 )
+from .logger import get_logger
+from .validation import (
+    ValidationError,
+    sanitize_dataframe,
+    validate_no_null_threshold,
+    validate_numeric_columns,
+    validate_required_columns,
+)
 from .verification import run_all_checks, verify_imports, verify_services
 
 __all__ = [
@@ -26,6 +34,12 @@ __all__ = [
     "clear_all_cache",
     "cache_buster_for_key",
     "verify_cache_helpers",
+    "get_logger",
+    "ValidationError",
+    "sanitize_dataframe",
+    "validate_no_null_threshold",
+    "validate_numeric_columns",
+    "validate_required_columns",
     "run_all_checks",
     "verify_imports",
     "verify_services",
