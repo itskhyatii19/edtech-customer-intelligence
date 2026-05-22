@@ -5,13 +5,13 @@ import streamlit as st
 from pathlib import Path
 import sys
 import os
+from typing import Optional, Tuple
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.features.build_features import (
-    load_data as load_raw_data,
     create_engagement,
     create_inactivity,
     merge_features,
@@ -19,6 +19,8 @@ from src.features.build_features import (
 )
 from app.services.churn_service import ChurnService
 from app.services.cache_utils import make_cache_buster
+from app.services.logger import get_logger
+from app.services.validation import ValidationError, validate_no_null_threshold
 from app.config import (
     USERS_CSV,
     LOGS_CSV,
@@ -34,12 +36,18 @@ class DataLoader:
     @st.cache_data
     def _cached_users_and_logs(cache_buster: str):
         """Internal cache wrapper for users and logs."""
+        logger = get_logger(__name__)
         try:
             users = pd.read_csv(USERS_CSV)
             logs = pd.read_csv(LOGS_CSV, nrows=LOG_ROWS_LIMIT)
             return users, logs
         except FileNotFoundError as e:
-            st.error(f"Data file not found: {e}")
+            logger.error("Data file not found: %s", e)
+            st.error("Data files are missing. Confirm that the CSV files exist in the data directory.")
+            return None, None
+        except Exception as exc:
+            logger.exception("Unexpected error loading users and logs")
+            st.error("Unable to load user or log data due to an unexpected error.")
             return None, None
 
     @staticmethod
@@ -52,11 +60,17 @@ class DataLoader:
     @st.cache_data
     def _cached_reviews(cache_buster: str):
         """Internal cache wrapper for reviews."""
+        logger = get_logger(__name__)
         try:
             reviews = pd.read_csv(REVIEWS_CSV)
             return reviews
         except FileNotFoundError as e:
-            st.error(f"Reviews file not found: {e}")
+            logger.error("Reviews file not found: %s", e)
+            st.error("Review data is missing. Confirm that the review CSV file exists.")
+            return None
+        except Exception as exc:
+            logger.exception("Unexpected error loading reviews")
+            st.error("Unable to load review data due to an unexpected error.")
             return None
 
     @staticmethod
@@ -69,41 +83,54 @@ class DataLoader:
     @st.cache_data
     def _cached_features(cache_buster: str):
         """Internal cache wrapper for expensive feature computations."""
-        users, logs = DataLoader.load_users_and_logs()
+        logger = get_logger(__name__)
+        try:
+            users, logs = DataLoader.load_users_and_logs()
 
-        if users is None or logs is None:
+            if users is None or logs is None:
+                return None
+
+            # Build feature pipeline
+            # Ensure timestamps are parsed for activity frequency calculations
+            if "timestamp_TW" in logs.columns:
+                logs = logs.copy()
+                logs["timestamp_TW"] = pd.to_datetime(logs["timestamp_TW"], errors="coerce")
+
+            engagement = create_engagement(logs)
+            inactivity = create_inactivity(logs)
+
+            # Compute days_active per user for frequency normalization
+            if "timestamp_TW" in logs.columns:
+                span = logs.groupby("uuid")["timestamp_TW"].agg(["min", "max"]).reset_index()
+                span["days_active"] = (span["max"] - span["min"]).dt.days + 1
+                span = span[["uuid", "days_active"]]
+            else:
+                span = pd.DataFrame({"uuid": engagement["uuid"].unique(), "days_active": 1})
+
+            df = merge_features(users, engagement, inactivity)
+
+            # Merge days_active and activity_count into features
+            df = df.merge(span, on="uuid", how="left")
+            df["days_active"] = df["days_active"].fillna(1).astype(int)
+
+            # Validate feature schema before churn scoring
+            validate_no_null_threshold(df, threshold=0.95)
+
+            # Compute improved churn scores and bands using ChurnService
+            df = ChurnService.compute_and_assign(df)
+
+            # Keep segmentation
+            df = segment_users(df)
+
+            return df
+        except ValidationError as exc:
+            logger.warning("Feature engineering validation failed: %s", exc)
+            st.error("Feature engineering failed because the data schema is invalid.")
             return None
-
-        # Build feature pipeline
-        # Ensure timestamps are parsed for activity frequency calculations
-        if "timestamp_TW" in logs.columns:
-            logs = logs.copy()
-            logs["timestamp_TW"] = pd.to_datetime(logs["timestamp_TW"], errors="coerce")
-
-        engagement = create_engagement(logs)
-        inactivity = create_inactivity(logs)
-
-        # Compute days_active per user for frequency normalization
-        if "timestamp_TW" in logs.columns:
-            span = logs.groupby("uuid")["timestamp_TW"].agg(["min", "max"]).reset_index()
-            span["days_active"] = (span["max"] - span["min"]).dt.days + 1
-            span = span[["uuid", "days_active"]]
-        else:
-            span = pd.DataFrame({"uuid": engagement["uuid"].unique(), "days_active": 1})
-
-        df = merge_features(users, engagement, inactivity)
-
-        # Merge days_active and activity_count into features
-        df = df.merge(span, on="uuid", how="left")
-        df["days_active"] = df["days_active"].fillna(1).astype(int)
-
-        # Compute improved churn scores and bands using ChurnService
-        df = ChurnService.compute_and_assign(df)
-
-        # Keep segmentation
-        df = segment_users(df)
-
-        return df
+        except Exception as exc:
+            logger.exception("Unexpected error during feature engineering")
+            st.error("Unable to compute feature data. Check the raw CSV inputs and refresh the application.")
+            return None
 
     @staticmethod
     def load_features():
