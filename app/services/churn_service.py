@@ -1,10 +1,19 @@
 """Churn scoring service: computes weighted churn score and assigns risk bands."""
 
-from typing import Dict
-import pandas as pd
+from typing import Dict, Iterable
+
 import numpy as np
+import pandas as pd
 import streamlit as st
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, roc_auc_score
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
 from app.config import MAX_INACTIVE_DAYS
+from app.services.logger import get_logger
+from app.services.validation import ValidationError, validate_numeric_columns, validate_required_columns
 
 
 class ChurnService:
@@ -18,6 +27,92 @@ class ChurnService:
     @staticmethod
     def _safe_div(a, b):
         return a / b if b != 0 else 0
+
+    @staticmethod
+    def _build_ml_features(df: pd.DataFrame) -> pd.DataFrame:
+        required = ["engagement_score", "inactive_days", "activity_count", "days_active"]
+        validate_required_columns(df, required)
+        validate_numeric_columns(df, ["engagement_score", "inactive_days", "activity_count", "days_active"])
+
+        features = df[required].copy()
+        features["days_active"] = features["days_active"].replace(0, 1).fillna(1)
+        features["activity_per_day"] = features["activity_count"] / features["days_active"]
+        features = features.fillna(0)
+        return features[["engagement_score", "inactive_days", "activity_count", "activity_per_day"]]
+
+    @staticmethod
+    def _build_target(df: pd.DataFrame) -> pd.Series:
+        if "churn_risk" not in df.columns:
+            raise ValidationError("Missing churn_risk target for model training.")
+        return (df["churn_risk"] == "high").astype(int)
+
+    @staticmethod
+    def _get_model_pipeline() -> Pipeline:
+        return Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "classifier",
+                    LogisticRegression(max_iter=500, random_state=42, solver="liblinear"),
+                ),
+            ]
+        )
+
+    @staticmethod
+    def train_churn_model(df: pd.DataFrame, test_size: float = 0.2, random_state: int = 42) -> Dict[str, object]:
+        logger = get_logger(__name__)
+        work = df.copy()
+        if work is None or work.empty:
+            raise ValidationError("Training data is empty.")
+
+        X = ChurnService._build_ml_features(work)
+        y = ChurnService._build_target(work)
+
+        if y.nunique() < 2:
+            raise ValidationError("Need at least two churn classes for model training.")
+
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=test_size, random_state=random_state, stratify=y
+        )
+        pipeline = ChurnService._get_model_pipeline()
+        pipeline.fit(X_train, y_train)
+
+        y_pred = pipeline.predict(X_test)
+        y_prob = pipeline.predict_proba(X_test)[:, 1]
+        accuracy = float(accuracy_score(y_test, y_pred))
+        auc = float(roc_auc_score(y_test, y_prob)) if len(np.unique(y_test)) > 1 else 0.0
+
+        feature_names = X.columns.tolist()
+        coefficients = pipeline.named_steps["classifier"].coef_[0]
+        importance = pd.DataFrame(
+            {"feature": feature_names, "coefficient": coefficients}
+        ).assign(abs_coef=lambda d: d["coefficient"].abs()).sort_values(
+            "abs_coef", ascending=False
+        )
+
+        logger.info("Trained churn model: accuracy=%.3f auc=%.3f", accuracy, auc)
+        return {
+            "pipeline": pipeline,
+            "accuracy": accuracy,
+            "auc": auc,
+            "importance": importance,
+        }
+
+    @staticmethod
+    def predict_churn_probability(df: pd.DataFrame, model: Pipeline | None = None) -> pd.Series:
+        work = df.copy()
+        if model is None:
+            raise ValidationError("No churn model provided for probability prediction.")
+
+        features = ChurnService._build_ml_features(work)
+        probs = model.predict_proba(features)[:, 1]
+        return pd.Series(probs, index=work.index)
+
+    @staticmethod
+    def get_model_driver_summary(importance: pd.DataFrame, top_n: int = 5) -> pd.DataFrame:
+        if importance is None or importance.empty:
+            return pd.DataFrame()
+        return importance.head(top_n).reset_index(drop=True)
 
     @staticmethod
     @st.cache_data(ttl=3600)
@@ -105,4 +200,11 @@ class ChurnService:
         scores = ChurnService.compute_churn_scores(work, **kwargs)
         work["churn_score"] = scores
         work["churn_risk"] = ChurnService.assign_risk_band(scores, low_thresh=low_thresh, high_thresh=high_thresh)
+        try:
+            model_meta = ChurnService.train_churn_model(work)
+            work["churn_probability"] = ChurnService.predict_churn_probability(work, model_meta["pipeline"])
+        except ValidationError:
+            work["churn_probability"] = work["churn_score"]
+        except Exception:
+            work["churn_probability"] = work["churn_score"]
         return work
