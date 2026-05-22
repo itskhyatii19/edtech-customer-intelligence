@@ -1,5 +1,6 @@
 """Review Intelligence page for student feedback analysis."""
 
+import pandas as pd
 import streamlit as st
 from app.services.review_service import ReviewService
 from app.components import (
@@ -127,12 +128,14 @@ def render() -> None:
         filtered_reviews = ReviewService.filter_reviews(
             search_text, min_rating, sentiment_choice
         )
-
+        if filtered_reviews is None:
+            st.info("Review filtering is unavailable because review data could not be loaded.")
+            filtered_reviews = pd.DataFrame(columns=["Review", "Label", "Sentiment", "Review Length"])
         st.write(
             f"Showing **{len(filtered_reviews)}** reviews matching the criteria."
         )
 
-        if len(filtered_reviews) == 0:
+        if filtered_reviews.empty:
             st.info("No reviews match the selected filters.")
         else:
             st.dataframe(

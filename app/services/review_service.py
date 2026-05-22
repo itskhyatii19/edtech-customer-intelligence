@@ -9,6 +9,8 @@ import nltk
 from nltk.corpus import stopwords
 import re
 
+from app.services.logger import get_logger
+
 # Ensure NLTK resources are available; download if missing
 try:
     _ = stopwords.words("english")
@@ -17,6 +19,26 @@ except Exception:
     _ = stopwords.words("english")
 
 EN_STOPWORDS = set(stopwords.words("english"))
+EXTRA_STOPWORDS = {
+    "course",
+    "learning",
+    "learners",
+    "student",
+    "students",
+    "platform",
+    "lesson",
+    "lessons",
+    "difficulty",
+    "problem",
+    "problems",
+    "would",
+    "really",
+    "also",
+    "could",
+    "would",
+    "still",
+}
+STOPWORDS = list(EN_STOPWORDS.union(EXTRA_STOPWORDS))
 EN_STOPWORDS_LIST = list(EN_STOPWORDS)
 
 def _clean_text(text: str) -> str:
@@ -24,7 +46,7 @@ def _clean_text(text: str) -> str:
     if not isinstance(text, str):
         return ""
     text = text.lower()
-    text = re.sub(r"[^a-z0-9\s]", " ", text)
+    text = re.sub(r"[^a-z0-9\s'-]", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
     return text
 
@@ -41,7 +63,10 @@ class ReviewService:
             return None
 
         reviews = reviews.copy()
-        reviews["Review"] = reviews["Review"].astype(str).str.strip()
+        if "Review" in reviews.columns:
+            reviews["Review"] = reviews["Review"].astype(str).str.strip()
+        else:
+            reviews["Review"] = ""
         if "Label" in reviews.columns:
             reviews["Label"] = pd.to_numeric(reviews["Label"], errors="coerce")
         
@@ -120,7 +145,11 @@ class ReviewService:
         if reviews is None:
             return None
 
+        if "Review" not in reviews.columns:
+            return None
         text_series = reviews["Review"].dropna().astype(str).map(_clean_text)
+        if text_series.empty:
+            return None
 
         vectorizer = TfidfVectorizer(
             stop_words=EN_STOPWORDS_LIST,
@@ -145,6 +174,8 @@ class ReviewService:
         reviews = ReviewService.load_reviews()
         if reviews is None:
             return {"positive": None, "negative": None}
+        if "Review" not in reviews.columns:
+            return {"positive": None, "negative": None}
 
         pos = reviews[reviews["Sentiment"] == "Positive"]["Review"].dropna().astype(str).map(_clean_text)
         neg = reviews[reviews["Sentiment"] == "Negative"]["Review"].dropna().astype(str).map(_clean_text)
@@ -160,6 +191,42 @@ class ReviewService:
             return df
 
         return {"positive": _top_for_series(pos), "negative": _top_for_series(neg)}
+
+    @staticmethod
+    @st.cache_data(ttl=3600)
+    def get_actionable_feedback_clusters(top_n=5):
+        """Return actionable positive and negative themes for instructor action."""
+        logger = get_logger(__name__)
+        reviews = ReviewService.load_reviews()
+        if reviews is None or "Review" not in reviews.columns:
+            return None
+
+        clusters = {}
+        for sentiment, label in [("positive", "Positive"), ("negative", "Negative")]:
+            candidates = reviews[reviews["Sentiment"] == label]["Review"].dropna().astype(str).map(_clean_text)
+            if candidates.empty:
+                clusters[sentiment] = None
+                continue
+
+            try:
+                vectorizer = TfidfVectorizer(
+                    stop_words=STOPWORDS,
+                    ngram_range=(1, 3),
+                    max_df=0.9,
+                    min_df=3,
+                    max_features=300,
+                )
+                tfidf = vectorizer.fit_transform(candidates)
+                feature_scores = tfidf.sum(axis=0).A1
+                terms = vectorizer.get_feature_names_out()
+                theme_df = pd.DataFrame({"Keyword": terms, "Score": feature_scores})
+                theme_df = theme_df.sort_values("Score", ascending=False).head(top_n)
+                clusters[sentiment] = theme_df
+            except Exception as exc:
+                logger.exception("Failed to compute actionable feedback clusters")
+                clusters[sentiment] = None
+
+        return clusters
 
     @staticmethod
     @st.cache_data(ttl=3600)
