@@ -1,15 +1,10 @@
 # 🎓 EdTech Customer Intelligence Platform
 
-A production-style AI/ML analytics platform built with **Streamlit**, **Plotly**, **scikit-learn**, and **Python** for learner engagement intelligence, churn prediction, review analytics, and executive business insights.
+AI-powered learner intelligence platform for churn prediction,
+review analytics, and executive decision support.
 
-This project combines:
-- analytics engineering
-- machine learning workflows
-- NLP pipelines
-- business intelligence dashboards
-- modular service architecture
-- production-oriented Streamlit engineering
-
+Built with:
+Python • Streamlit • FastAPI • scikit-learn • NLP • RAG
 ---
 
 #  Core Features
