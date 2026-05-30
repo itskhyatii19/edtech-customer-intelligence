@@ -25,6 +25,7 @@ from app.views import (
     render_home,
     render_ai_insights,
     render_learner_analytics,
+    render_predictive_analytics,
     render_review_intelligence,
     render_settings,
 )
@@ -134,6 +135,7 @@ with st.sidebar:
         "Overview": "🏠",
         "Learner Analytics": "📊",
         "AI Insights": "💡",
+        "Predictive Analytics": "🔮",
         "Review Intelligence": "📝",
         "Settings": "⚙️",
     }
@@ -156,6 +158,7 @@ PAGE_RENDERERS = {
     "Overview": render_home,
     "Learner Analytics": render_learner_analytics,
     "AI Insights": render_ai_insights,
+    "Predictive Analytics": render_predictive_analytics,
     "Review Intelligence": render_review_intelligence,
     "Settings": render_settings,
 }

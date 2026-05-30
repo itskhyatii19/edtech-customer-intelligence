@@ -6,6 +6,9 @@ from .review_service import ReviewService
 from .churn_service import ChurnService
 from .export_service import df_to_csv_bytes, get_filtered_reviews_csv
 from .insight_service import InsightService
+from .predictive_service import PredictiveService
+from .anomaly_service import AnomalyService
+from .recommendation_service import RecommendationService
 from .cache_utils import (
     get_cache_ttl_minutes,
     set_cache_ttl_minutes,
