@@ -2,23 +2,40 @@
 
 import pandas as pd
 import streamlit as st
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.decomposition import TruncatedSVD
+try:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.decomposition import TruncatedSVD
+    SKLEARN_AVAILABLE = True
+except Exception:
+    TfidfVectorizer = None
+    TruncatedSVD = None
+    SKLEARN_AVAILABLE = False
 from app.services.data_loader import DataLoader
-import nltk
-from nltk.corpus import stopwords
+try:
+    import nltk
+    from nltk.corpus import stopwords
+    NLTK_AVAILABLE = True
+except Exception:
+    nltk = None
+    stopwords = None
+    NLTK_AVAILABLE = False
 import re
 
 from app.services.logger import get_logger
 
-# Ensure NLTK resources are available; download if missing
-try:
-    _ = stopwords.words("english")
-except Exception:
-    nltk.download("stopwords")
-    _ = stopwords.words("english")
-
-EN_STOPWORDS = set(stopwords.words("english"))
+# Ensure NLTK resources are available; download if missing when possible
+if NLTK_AVAILABLE:
+    try:
+        _ = stopwords.words("english")
+    except Exception:
+        try:
+            nltk.download("stopwords")
+            _ = stopwords.words("english")
+        except Exception:
+            _ = []
+    EN_STOPWORDS = set(_) if _ else set()
+else:
+    EN_STOPWORDS = set()
 EXTRA_STOPWORDS = {
     "course",
     "learning",
@@ -151,6 +168,9 @@ class ReviewService:
         if text_series.empty:
             return None
 
+        if not SKLEARN_AVAILABLE or TfidfVectorizer is None:
+            return None
+
         vectorizer = TfidfVectorizer(
             stop_words=EN_STOPWORDS_LIST,
             ngram_range=(1, 2),
@@ -183,6 +203,8 @@ class ReviewService:
         def _top_for_series(series, n=top_n):
             if series.empty:
                 return None
+            if not SKLEARN_AVAILABLE or TfidfVectorizer is None:
+                return None
             v = TfidfVectorizer(stop_words=EN_STOPWORDS_LIST, ngram_range=(1, 2), max_df=0.9, min_df=3, max_features=300)
             tf = v.fit_transform(series)
             scores = tf.sum(axis=0).A1
@@ -209,6 +231,9 @@ class ReviewService:
                 continue
 
             try:
+                if not SKLEARN_AVAILABLE or TfidfVectorizer is None:
+                    clusters[sentiment] = None
+                    continue
                 vectorizer = TfidfVectorizer(
                     stop_words=STOPWORDS,
                     ngram_range=(1, 3),
@@ -241,6 +266,9 @@ class ReviewService:
 
         texts = reviews["Review"].dropna().astype(str).map(_clean_text)
         if texts.empty:
+            return None
+
+        if not SKLEARN_AVAILABLE or TfidfVectorizer is None or TruncatedSVD is None:
             return None
 
         v = TfidfVectorizer(stop_words=EN_STOPWORDS_LIST, ngram_range=(1, 2), max_df=0.9, min_df=5, max_features=2000)
