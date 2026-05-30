@@ -1,15 +1,21 @@
 """Churn scoring service: computes weighted churn score and assigns risk bands."""
 
+from __future__ import annotations
+
 from typing import Dict, Iterable
 
 import numpy as np
 import pandas as pd
 import streamlit as st
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, roc_auc_score
-from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
+try:
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import accuracy_score, roc_auc_score
+    from sklearn.model_selection import train_test_split
+    from sklearn.pipeline import Pipeline
+    from sklearn.preprocessing import StandardScaler
+    SKLEARN_AVAILABLE = True
+except Exception:
+    SKLEARN_AVAILABLE = False
 
 from app.config import MAX_INACTIVE_DAYS
 from app.services.logger import get_logger
@@ -64,39 +70,43 @@ class ChurnService:
         work = df.copy()
         if work is None or work.empty:
             raise ValidationError("Training data is empty.")
-
         X = ChurnService._build_ml_features(work)
         y = ChurnService._build_target(work)
 
         if y.nunique() < 2:
             raise ValidationError("Need at least two churn classes for model training.")
 
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=test_size, random_state=random_state, stratify=y
-        )
-        pipeline = ChurnService._get_model_pipeline()
-        pipeline.fit(X_train, y_train)
+        if SKLEARN_AVAILABLE:
+            X_train, X_test, y_train, y_test = train_test_split(
+                X, y, test_size=test_size, random_state=random_state, stratify=y
+            )
+            pipeline = ChurnService._get_model_pipeline()
+            pipeline.fit(X_train, y_train)
 
-        y_pred = pipeline.predict(X_test)
-        y_prob = pipeline.predict_proba(X_test)[:, 1]
-        accuracy = float(accuracy_score(y_test, y_pred))
-        auc = float(roc_auc_score(y_test, y_prob)) if len(np.unique(y_test)) > 1 else 0.0
+            y_pred = pipeline.predict(X_test)
+            y_prob = pipeline.predict_proba(X_test)[:, 1]
+            accuracy = float(accuracy_score(y_test, y_pred))
+            auc = float(roc_auc_score(y_test, y_prob)) if len(np.unique(y_test)) > 1 else 0.0
 
-        feature_names = X.columns.tolist()
-        coefficients = pipeline.named_steps["classifier"].coef_[0]
-        importance = pd.DataFrame(
-            {"feature": feature_names, "coefficient": coefficients}
-        ).assign(abs_coef=lambda d: d["coefficient"].abs()).sort_values(
-            "abs_coef", ascending=False
-        )
+            feature_names = X.columns.tolist()
+            coefficients = pipeline.named_steps["classifier"].coef_[0]
+            importance = pd.DataFrame(
+                {"feature": feature_names, "coefficient": coefficients}
+            ).assign(abs_coef=lambda d: d["coefficient"].abs()).sort_values(
+                "abs_coef", ascending=False
+            )
 
-        logger.info("Trained churn model: accuracy=%.3f auc=%.3f", accuracy, auc)
-        return {
-            "pipeline": pipeline,
-            "accuracy": accuracy,
-            "auc": auc,
-            "importance": importance,
-        }
+            logger.info("Trained churn model: accuracy=%.3f auc=%.3f", accuracy, auc)
+            return {
+                "pipeline": pipeline,
+                "accuracy": accuracy,
+                "auc": auc,
+                "importance": importance,
+            }
+
+        # Fallback when sklearn is not available
+        logger.warning("sklearn not available; skipping ML training and returning deterministic summary.")
+        return {"pipeline": None, "accuracy": None, "auc": None, "importance": pd.DataFrame()}
 
     @staticmethod
     def predict_churn_probability(df: pd.DataFrame, model: Pipeline | None = None) -> pd.Series:
