@@ -1,157 +1,222 @@
 # 🎓 EdTech Customer Intelligence Platform
 
-AI-powered learner intelligence platform for churn prediction,
-review analytics, and executive decision support.
+AI-powered learner intelligence platform for engagement analytics, review intelligence, churn-risk assessment, predictive analytics, and executive decision support.
 
 Built with:
-Python • Streamlit • FastAPI • scikit-learn • NLP • RAG
+
+**Python • Streamlit • Plotly • scikit-learn • NLP • Analytics Engineering**
+
 ---
 
 #  Core Features
 
-## 📊 Executive Analytics Dashboard
-- Executive KPI overview
-- Learner engagement intelligence
-- Churn risk monitoring
-- Platform health summaries
-- Review intelligence metrics
-- Business-oriented insight cards
+##  Executive Analytics Dashboard
+
+* Executive KPI overview
+* Learner engagement intelligence
+* Churn risk monitoring
+* Platform health summaries
+* Review intelligence metrics
+* Business-oriented insight cards
+* Executive retention indicators
+* Actionable intervention recommendations
 
 ---
 
 # 🧠 AI Insights Engine
 
-Production-style business intelligence system with:
-- Executive findings generation
-- Retention health analysis
-- Engagement quality analysis
-- Sentiment health monitoring
-- Churn anomaly detection
-- Deterministic recommendation engine
-- Actionable intervention suggestions
-- Explainable business rules
+Production-style business intelligence system featuring:
+
+* Executive findings generation
+* Retention health analysis
+* Engagement quality monitoring
+* Sentiment health analysis
+* Churn anomaly identification
+* Recommendation engine
+* Action-oriented interventions
+* Explainable business rules
 
 ### Recommendation Logic
+
 Examples:
-- High churn risk + inactivity → re-engagement campaign
-- Negative sentiment spikes → course quality review
-- Moderate-risk learner growth → targeted nudges
+
+* High churn risk + inactivity → Re-engagement campaign
+* Negative sentiment spikes → Course quality review
+* Moderate-risk learner growth → Targeted learner nudges
 
 ---
 
-# 👥 Learner Analytics
+#  Learner Analytics
 
 Advanced learner intelligence dashboard featuring:
-- Cohort-level analytics
-- Engagement segmentation
-- Retention analysis
-- Inactivity monitoring
-- Activity frequency distribution
-- Churn risk distribution
-- Engagement vs inactivity visualization
-- Downloadable cohort exports
+
+* Cohort-level analytics
+* Learner segmentation
+* Engagement scoring
+* Retention analysis
+* Inactivity monitoring
+* Activity frequency distributions
+* Churn risk monitoring
+* Engagement vs inactivity visualization
+* Downloadable cohort exports
 
 ---
 
-# 💬 Review Intelligence (NLP)
+#  Review Intelligence (NLP)
 
-AI-powered review analytics pipeline with:
-- Sentiment distribution
-- Keyword extraction
-- Theme analysis
-- Positive vs negative review themes
-- TF-IDF based topic intelligence
-- n-gram extraction
-- Search & filter reviews
-- Export filtered datasets
-- Actionable learner feedback patterns
+AI-powered review analytics pipeline featuring:
 
----
-
-# 🤖 Machine Learning Systems
-
-## Churn Prediction Pipeline
-- ML-driven churn scoring
-- Probability-based risk prediction
-- Feature-engineered learner analytics
-- Modular sklearn pipeline architecture
-- Explainable risk classification
-
-## Feature Engineering
-Features include:
-- engagement score
-- inactivity days
-- activity frequency
-- review sentiment
-- learner segment classification
-- churn indicators
-- retention behavior
+* Sentiment distribution analysis
+* Keyword extraction
+* Theme discovery
+* Positive vs negative review themes
+* TF-IDF based topic intelligence
+* N-gram extraction
+* Search & filter functionality
+* Exportable review datasets
+* Actionable learner feedback insights
 
 ---
 
-# 🏗️ Engineering Features
+#  Predictive Analytics
+
+Production-style predictive intelligence dashboard featuring:
+
+* Churn risk scoring
+* Risk segmentation (High / Medium / Low)
+* Anomaly detection
+* Intervention recommendations
+* Model status monitoring
+* Training metadata tracking
+* Risk distribution visualization
+* Executive retention insights
+
+### Predictive Intelligence Services
+
+#### PredictiveService
+
+* Model training workflows
+* Model persistence
+* Prediction APIs
+* Metadata management
+* Feature importance support
+* Explainability extension points
+
+#### AnomalyService
+
+* Learner anomaly detection
+* Outlier identification
+* Statistical fallback analysis
+
+#### RecommendationService
+
+* Rule-based intervention generation
+* Risk mitigation recommendations
+* Retention improvement actions
+
+---
+
+# 🤖 Churn Intelligence Pipeline
+
+Current capabilities:
+
+* Deterministic churn scoring engine
+* Risk band classification
+* Feature-engineered learner analytics
+* Modular ML-ready architecture
+* Model persistence and metadata tracking
+* Graceful fallback behavior when ML dependencies are unavailable
+
+Supported architecture:
+
+* Random Forest training pipeline
+* Model registry management
+* Prediction APIs
+* Feature importance tracking
+* Future explainability integration
+
+---
+
+#  Engineering Features
 
 ## Modular Architecture
-- Reusable service-layer design
-- Clean analytics separation
-- Centralized configuration
-- Modular UI components
-- Scalable project organization
+
+* Reusable service-layer design
+* Centralized configuration management
+* Modular UI components
+* Clean analytics separation
+* Scalable project organization
 
 ## Performance Optimization
-- Runtime cache management
-- Configurable cache TTL
-- Lightweight validation utilities
-- Optimized dataset loading
-- Reduced recomputation overhead
+
+* Runtime cache management
+* Configurable cache TTL
+* Optimized dataset loading
+* Reduced recomputation overhead
+* Lightweight validation utilities
 
 ## Reliability & Validation
-- Data validation helpers
-- Import verification checks
-- Lightweight diagnostics
-- Graceful error handling
-- Page render validation
+
+* Data validation helpers
+* Import verification checks
+* Runtime diagnostics
+* Graceful error handling
+* Page render validation
 
 ## Logging & Debugging
-- Centralized logger utility
-- Service-level diagnostics
-- Structured debug outputs
-- Easier runtime troubleshooting
+
+* Centralized logger utility
+* Service-level diagnostics
+* Structured debugging outputs
+* Easier runtime troubleshooting
 
 ---
 
 # 🖥️ Dashboard Pages
 
-## 🏠 Overview Dashboard
-- Executive KPI cards
-- Engagement summaries
-- Churn overview
-- Platform-wide intelligence
+##  Overview Dashboard
 
-## 👥 Learner Analytics
-- Cohort analysis
-- Retention trends
-- Engagement buckets
-- Inactivity analysis
-- Risk monitoring
+* Executive KPI cards
+* Engagement summaries
+* Churn overview
+* Platform-wide intelligence
 
-## 🧠 AI Insights
-- Executive findings
-- Business recommendations
-- Platform health summaries
-- Action-oriented insights
+##  Learner Analytics
 
-## 💬 Review Intelligence
-- Sentiment analysis
-- NLP theme extraction
-- Keyword intelligence
-- Feedback analytics
+* Cohort analysis
+* Retention trends
+* Engagement buckets
+* Inactivity analysis
+* Risk monitoring
+
+##  AI Insights
+
+* Executive findings
+* Business recommendations
+* Platform health summaries
+* Action-oriented insights
+
+##  Predictive Analytics
+
+* Model status monitoring
+* Churn risk assessment
+* Risk segmentation
+* Intervention recommendations
+* Retention intelligence
+
+##  Review Intelligence
+
+* Sentiment analysis
+* NLP theme extraction
+* Keyword intelligence
+* Feedback analytics
 
 ## ⚙️ Settings & Diagnostics
-- Cache management
-- Runtime controls
-- Data source metadata
-- App health diagnostics
+
+* Cache controls
+* Runtime diagnostics
+* Data source metadata
+* Health verification
 
 ---
 
@@ -160,26 +225,37 @@ Features include:
 ```bash
 edtech-customer-intelligence/
 ├── app/
-│   ├── main.py                  # Streamlit entrypoint and routing
-│   ├── pages/                   # Dashboard page layouts
-│   ├── services/                # Analytics + ML service layer
+│   ├── main.py
+│   ├── pages/
+│   │   ├── home.py
+│   │   ├── learner_analytics.py
+│   │   ├── ai_insights.py
+│   │   ├── predictive_analytics.py
+│   │   ├── review_intelligence.py
+│   │   └── settings.py
+│   │
+│   ├── services/
 │   │   ├── analytics_service.py
 │   │   ├── churn_service.py
 │   │   ├── insight_service.py
 │   │   ├── review_service.py
+│   │   ├── predictive_service.py
+│   │   ├── anomaly_service.py
+│   │   ├── recommendation_service.py
 │   │   ├── validation.py
 │   │   └── logger.py
-│   ├── components/              # Reusable UI components
-│   ├── config.py                # Central configs/constants
-│   └── assets/                  # Optional static assets
+│   │
+│   ├── components/
+│   ├── config.py
+│   └── assets/
 │
 ├── data/
 │   ├── junyi/
 │   └── reviews/
 │
-├── models/                      # ML artifacts and outputs
-├── notebooks/                   # EDA + feature engineering
-├── reports/                     # Generated outputs/reports
+├── models/
+├── notebooks/
+├── reports/
 ├── requirements.txt
 └── README.md
 ```
@@ -189,23 +265,27 @@ edtech-customer-intelligence/
 # 🛠️ Tech Stack
 
 ## Core
-- Python 3.11+
-- Streamlit
-- Plotly
-- pandas
-- NumPy
+
+* Python 3.11+
+* Streamlit
+* Plotly
+* Pandas
+* NumPy
 
 ## Machine Learning
-- scikit-learn
-- TF-IDF Vectorization
-- NLP preprocessing
-- Feature engineering
+
+* scikit-learn
+* Random Forest
+* Feature Engineering
+* Predictive Analytics Pipelines
 
 ## NLP & Analytics
-- NLTK
-- sentiment analysis
-- keyword extraction
-- review intelligence pipelines
+
+* NLTK
+* TF-IDF Vectorization
+* Sentiment Analysis
+* Keyword Extraction
+* Topic Intelligence
 
 ---
 
@@ -233,7 +313,7 @@ streamlit run app/main.py
 streamlit run app/main.py
 ```
 
-App runs on:
+Application runs on:
 
 ```bash
 http://localhost:8501
@@ -244,141 +324,142 @@ http://localhost:8501
 # 📂 Datasets Used
 
 ## User Dataset
-`Info_UserData.csv`
-- learner demographics
-- engagement behavior
-- inactivity tracking
+
+Info_UserData.csv
+
+* Learner demographics
+* Engagement behavior
+* Inactivity tracking
 
 ## Activity Dataset
-`Log_Problem.csv`
-- learning interactions
-- platform activity logs
-- engagement events
+
+Log_Problem.csv
+
+* Learning interactions
+* Platform activity logs
+* Engagement events
 
 ## Review Dataset
-`reviews.csv`
-- learner reviews
-- ratings
-- text feedback
-- sentiment analysis source
+
+reviews.csv
+
+* Learner reviews
+* Ratings
+* Text feedback
+* Sentiment analysis source
 
 ---
 
 # 📈 Analytics Capabilities
 
 ## Engagement Intelligence
-- engagement scoring
-- learner segmentation
-- activity trend analysis
-- retention health
+
+* Engagement scoring
+* Learner segmentation
+* Activity trend analysis
+* Retention health monitoring
 
 ## Churn Intelligence
-- churn probability estimation
-- inactivity risk analysis
-- anomaly detection signals
-- high-risk cohort detection
+
+* Churn risk estimation
+* Inactivity risk analysis
+* Risk band classification
+* High-risk learner detection
 
 ## Review Intelligence
-- sentiment health
-- NLP topic extraction
-- keyword analytics
-- actionable feedback signals
+
+* Sentiment health monitoring
+* Topic extraction
+* Keyword intelligence
+* Actionable feedback insights
+
+## Predictive Intelligence
+
+* Risk scoring
+* Anomaly detection
+* Recommendation generation
+* Retention intervention support
 
 ---
 
 # 📸 Screenshots
 
-## Overview Dashboard
-- KPI cards
-- executive metrics
-- engagement intelligence
-- churn analytics
+Add screenshots for:
 
-## Learner Analytics
-- cohort segmentation
-- retention curves
-- inactivity trends
-- engagement distributions
-
-## AI Insights
-- executive findings
-- platform health summaries
-- recommendation engine
-- business alerts
-
-## Review Intelligence
-- sentiment analysis
-- keyword themes
-- review filtering
-- NLP intelligence
-
-## Settings & Diagnostics
-- cache controls
-- runtime diagnostics
-- health verification
-
-> Add actual screenshots/GIFs here before publishing.
+* Overview Dashboard
+* Learner Analytics
+* AI Insights
+* Predictive Analytics
+* Review Intelligence
+* Settings & Diagnostics
 
 ---
 
 # ✅ Engineering Highlights
 
-- Modular ML service architecture
-- Production-style analytics layering
-- Reusable Streamlit component system
-- Runtime cache invalidation utilities
-- Lightweight validation framework
-- Centralized logging utilities
-- Portfolio-grade project organization
-- Business-oriented AI insight generation
+* Modular analytics service architecture
+* Predictive analytics framework
+* NLP-powered review intelligence
+* Production-style dashboard engineering
+* Reusable Streamlit component system
+* Runtime cache management
+* Validation and diagnostics utilities
+* Centralized logging framework
+* Business-oriented AI insights
 
 ---
 
-# 🧪 Future Improvements
+#  Future Improvements
 
-## Advanced AI Features
-- LLM-powered executive summaries
-- RAG-based analytics assistant
-- conversational data querying
-- semantic review search
+## Machine Learning
 
-## ML Improvements
-- SHAP explainability
-- anomaly detection models
-- recommendation ranking engine
-- predictive retention forecasting
+* Behavior-based churn labels
+* Advanced predictive modeling
+* SHAP explainability
+* Model comparison dashboard
+* Automated retraining pipelines
+* Drift monitoring
 
-## Product Features
-- authentication system
-- role-based dashboards
-- cloud deployment
-- real-time analytics pipeline
-- automated reporting exports
+## AI Features
+
+* LLM-powered executive summaries
+* RAG-based analytics assistant
+* Conversational analytics querying
+* Semantic review search
+
+## Product Enhancements
+
+* Authentication system
+* Role-based dashboards
+* Cloud deployment
+* Real-time analytics pipeline
+* Automated reporting exports
 
 ---
 
 # 🎯 Project Goals
 
 This project demonstrates:
-- applied machine learning engineering
-- analytics product development
-- NLP integration in real workflows
-- business intelligence systems
-- production-oriented dashboard engineering
-- scalable analytics architecture
-- data product thinking
+
+* Applied machine learning engineering
+* Analytics product development
+* NLP integration in business workflows
+* Predictive analytics architecture
+* Business intelligence systems
+* Production-oriented dashboard engineering
+* Data product thinking
 
 ---
 
-# 📚 Key Learning Outcomes
+#  Key Learning Outcomes
 
-- Designing modular ML systems
-- Building scalable analytics dashboards
-- Applying NLP pipelines to review data
-- Engineering production-style Streamlit apps
-- Managing caching and runtime performance
-- Structuring reusable analytics services
-- Translating ML outputs into business insights
+* Designing modular ML systems
+* Building scalable analytics dashboards
+* Applying NLP pipelines to real-world review data
+* Engineering production-style Streamlit applications
+* Managing caching and performance optimization
+* Structuring reusable service architectures
+* Translating ML outputs into business decisions
 
 ---
 
@@ -386,7 +467,6 @@ This project demonstrates:
 
 Contributions, suggestions, and improvements are welcome.
 
-If contributing:
 1. Fork the repository
 2. Create a feature branch
 3. Submit a pull request
@@ -401,9 +481,11 @@ This project is licensed under the MIT License.
 
 # 👨‍💻 Author
 
-Built as an applied AI/ML engineering and analytics portfolio project focused on:
-- business intelligence
-- learner analytics
-- churn prediction
-- NLP systems
-- executive dashboard engineering
+Built as an applied AI/ML engineering portfolio project focused on:
+
+* Learner Analytics
+* Churn Intelligence
+* Predictive Analytics
+* NLP Systems
+* Executive Dashboards
+* Business Intelligence
